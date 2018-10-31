@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
-char *itoa(int value) {
+char *itoa2(int value) {
     // convert an input value into a string
 
     int size = 1;
@@ -35,6 +37,34 @@ char *itoa(int value) {
     return output;
 }
 
+void reverse_str(char *str) {
+    char c;
+    int len = strlen(str);
+    for (int i = 0; i < len / 2; i++)
+        c = str[len - i - 1], str[len - i - 1] = str[i], str[i] = c;
+}
+
+char *itoa(int value) {
+    char *output = malloc(sizeof(int) + 2);
+    int size = 0;
+    int sign = (value > 0) ? 1 : - 1;
+
+    do {
+        output[size++] = value % 10 * sign + '0';
+    } while (value /= 10);
+
+    if (sign == -1)
+        output[size++] = '-';
+
+    output[size] = '\0';
+
+    reverse_str(output);
+
+    output = realloc(output, size + 1);
+
+    return output;
+}
+
 int main(void) {
     printf("%s\n", itoa(130101));
     printf("%s\n", itoa(120412010));
@@ -44,4 +74,6 @@ int main(void) {
     printf("%s\n", itoa(-130101));
     printf("%s\n", itoa(-120412010));
     printf("%s\n", itoa(-400));
+    printf("%s\n", itoa(INT_MIN));
+    printf("%s\n", itoa(INT_MAX));
 }
