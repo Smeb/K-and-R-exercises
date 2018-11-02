@@ -17,10 +17,32 @@ int apply(int a, int b, char operand) {
         case '*': return a * b;
         case '+': return a + b;
         case '-': return a - b;
-        case '/': return a / b;
+        case '/': {
+                      if (b == 0) {
+                          fprintf(stderr, "Attempted division by zero in %d / %d\n", a, b);
+                          exit(1);
+                      }
+                      return a / b;
+                  }
     }
-    fprintf(stderr, "Logical error: Operand not defined in apply method");
+    fprintf(stderr, "Logical error: Operand not defined in apply method\n");
     exit(1);
+}
+
+int pop(int *stack, int * index) {
+    if(*index == 0) {
+        fprintf(stderr, "Not enough numbers on stack to process operand\n");
+        exit(1);
+    }
+    return stack[--(*index)];
+}
+
+void push(char c, int *stack, int *index) {
+    int val = c - '0';
+    while((c = getchar()) && isdigit(c)) {
+        val = val * 10 + c - '0';
+    }
+    stack[(*index)++] = val;
 }
 
 int main(void) {
@@ -30,19 +52,10 @@ int main(void) {
     char c;
     while(c != EOF && (c = getchar())) {
         if (isdigit(c)) {
-            int val = c - '0';
-            while((c = getchar()) && isdigit(c)) {
-                val = val * 10 + c - '0';
-            }
-            stack[index++] = val;
+            push(c, stack, &index);
         } else if (is_operand(c)) {
-            if(index - 2 < 0) {
-                fprintf(stderr, "Not enough numbers on stack to process operand\n");
-                exit(1);
-            }
-
-            int b = stack[--index];
-            int a = stack[--index];
+            int b = pop(stack, &index);
+            int a = pop(stack, &index);
             stack[index++] = apply(a, b, c);
         }
 
@@ -53,7 +66,7 @@ int main(void) {
     }
 
     if(index > 0) {
-        printf("%d\n", stack[index - 1]);
+        printf("Result: %d\n", stack[index - 1]);
     }
     free(stack);
 }
