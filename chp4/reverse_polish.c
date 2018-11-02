@@ -55,4 +55,5 @@ int main(void) {
     if(index > 0) {
         printf("%d\n", stack[index - 1]);
     }
+    free(stack);
 }
